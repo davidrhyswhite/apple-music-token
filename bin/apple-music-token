@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+const fs = require('fs');
+const os = require('os');
+const clc = require('cli-color');
+const readline = require('readline');
+const createToken = require('../');
+
+const { yellow, green, red } = clc;
+const HOME = os.homedir();
+const SETTINGS_FILE = `${HOME}/.apple-music-token-settings.json`;
+
+function getSettings() {
+  try {
+    const settings = fs.readFileSync(SETTINGS_FILE, 'utf8');
+
+    return JSON.parse(settings);
+  } catch(err) {
+    return false;
+  }
+}
+const settings = getSettings();
+
+function getSetting (setting) {
+  if (settings) {
+    if (setting === 'authKey') {
+      const key = settings.authKey.split('/').splice(-1);
+      return ` (${key}) `;
+    }
+    return ` (${settings[setting]}) `;
+  }
+  return ' ';
+}
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const questionOne = yellow('1. ') + green('Auth Key .p8:') + (getSetting('authKey').split('/').splice(-1));
+const questionTwo = yellow('2. ') + green('Music Key ID:') + getSetting('keyid');
+const questionThree = yellow('3. ') + green('Team ID:') + getSetting('teamid');
+const questionFour = yellow('4. ') + green('Save these settings in your home directory? (yes|no): ');
+
+rl.question(questionOne, (file) => {
+
+  const fullFilePath = (settings) ? settings.authKey : `${process.cwd()}/${file}`;
+  const secret = fs.readFileSync(fullFilePath, 'utf8');
+
+  rl.question(questionTwo, (key) => {
+    const keyid = (settings) ? settings.keyid : key;
+
+    rl.question(questionThree, (team) => {
+      const teamid = (settings) ? settings.teamid : team;
+      const token = createToken(60000)(secret, teamid, keyid);
+
+      console.log(' ');
+      console.log(green('Token sucessfully generated...'));
+      console.log(' ');
+      console.log(yellow('TOKEN: '));
+      console.log(token);
+      console.log(' ');
+      console.log(yellow('USAGE: '));
+      console.log(`curl -v -H 'Authorization: Bearer ${token}' "https://api.music.apple.com/v1/catalog/us/artists/36954"`);
+      console.log(' ');
+
+      if (settings !== false) {
+        return rl.close();
+      };
+
+      rl.question(questionFour, (answer) => {
+        if (answer.match(/^y(es)?$/i)) {
+          const settings = {
+            authKey: fullFilePath,
+            keyid,
+            teamid
+          };
+          fs.writeFile(SETTINGS_FILE, JSON.stringify(settings), (err) => {
+            if (err) {
+              return console.error(red(err));
+            }
+
+            console.log(' ');
+            console.log(green(`Settings stored in: ${SETTINGS_FILE}/.apple-music-token-settings.json`));
+            rl.close();
+          });
+        }
+      });
+    });
+  });
+});

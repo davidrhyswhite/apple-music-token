@@ -1,0 +1,27 @@
+{
+  "name": "apple-music-token",
+  "version": "1.0.0",
+  "description": "A simple CLI for generating a new Apple Music JSON Web Token",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'TODO'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/davidrhyswhite/apple-music-token.git"
+  },
+  "author": "David Rhys White <david.rhys.white@icloud.com>",
+  "bugs": {
+    "url": "https://github.com/davidrhyswhite/apple-music-token/issues"
+  },
+  "license": "MIT",
+  "bin": {
+    "apple-music-jwt": "./bin/apple-music-token"
+  },
+  "preferGlobal": true,
+  "devDependencies": {},
+  "dependencies": {
+    "cli-color": "^1.2.0",
+    "jsonwebtoken": "^8.1.0"
+  }
+}
