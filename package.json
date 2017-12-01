@@ -16,7 +16,7 @@
   },
   "license": "MIT",
   "bin": {
-    "apple-music-jwt": "./bin/apple-music-token"
+    "apple-music-token": "./bin/apple-music-token"
   },
   "preferGlobal": true,
   "devDependencies": {},
