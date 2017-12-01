@@ -1,6 +1,6 @@
 {
   "name": "apple-music-token",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple CLI for generating a new Apple Music JSON Web Token",
   "main": "index.js",
   "scripts": {
